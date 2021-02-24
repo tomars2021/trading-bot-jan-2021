@@ -1,6 +1,11 @@
 from binance.client import Client
 import helper
 import pandas as pd
+import strategy
+
+WAIT = 0
+BUY = 1
+SELL = -1
 
 # 1. website, fetch data
 # https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=10
@@ -18,6 +23,18 @@ helper.save_data_to_local_csv(data=klines, filename=filename)
 df = pd.read_csv(filename)
 df.columns = ["opentime", "open", "high","low","close","volume","closetime","QuoteAssetVolume","NumberOfTrades","TakerBuyBaseAssetVolume","TakerBuyQuoteAssetVolume", "ignore"]
 
-print(df)
+# 2.3 run strategy
+action = WAIT
+rsi = strategy.RSI(data=df["close"], time_window=12)
+current_rsi = rsi.values[-1]
+
+if current_rsi > 70:
+    action = SELL
+elif current_rsi < 30:
+    action = BUY
+
+print("action: {}, current rsi:{}".format(action, int(current_rsi)))
+
+
 
 # 3. Sell / Buy / Wait
