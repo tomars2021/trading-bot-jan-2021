@@ -9,3 +9,7 @@ def save_data_to_local_csv(data, filename):
         data_writer.writerow(item)
 
     csvfile.close()
+
+def my_account_balance(client, symbol):
+    usdt = client.get_asset_balance(symbol)["free"]
+    return usdt
